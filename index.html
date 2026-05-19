@@ -107,6 +107,8 @@
       </div>
     </section>
 
+    <div id="status" class="status" style="margin-bottom: var(--space-6);">พร้อมส่งข้อมูล</div>
+
     <form id="surveyForm" class="grid">
       <section class="card">
         <h2 class="section-title">ข้อมูลพื้นฐานที่ไม่ระบุตัวตน</h2>
@@ -179,7 +181,7 @@
 
       <section class="card">
         <h2 class="section-title">ตำแหน่งอาการปวด</h2>
-        <p class="section-desc">ขยายพื้นที่คลิกให้ใหญ่ขึ้น โดยแยกไหล่และหลังส่วนบนให้ห่างกันชัดกว่าเดิม เพื่อลดการเลือกผิดตำแหน่ง.</p>
+        <p class="section-desc">ปรับ body map ใหม่ให้แต่ละโซนไม่ทับซ้อนกัน โดยเฉพาะคอ ไหล่ หลังส่วนบน และหลังส่วนล่าง เพื่อลดความคลาดเคลื่อนในการเลือกตำแหน่งปวด.</p>
         <div class="map-wrap">
           <div class="bodymap">
             <svg viewBox="0 0 280 560" aria-labelledby="bodyTitle" role="img">
@@ -191,10 +193,11 @@
               <rect class="limb" x="108" y="204" width="28" height="142" rx="14"></rect>
               <rect class="limb" x="144" y="204" width="28" height="142" rx="14"></rect>
 
-              <rect class="region" data-region="neck" x="117" y="84" width="46" height="22" rx="10"></rect>
-              <rect class="region" data-region="shoulder" x="76" y="106" width="128" height="26" rx="12"></rect>
-              <rect class="region" data-region="upper_back" x="102" y="136" width="76" height="44" rx="14"></rect>
-              <rect class="region" data-region="lower_back" x="102" y="182" width="76" height="34" rx="12"></rect>
+              <rect class="region" data-region="neck" x="120" y="82" width="40" height="18" rx="9"></rect>
+              <rect class="region" data-region="left_shoulder" x="72" y="104" width="48" height="22" rx="10"></rect>
+              <rect class="region" data-region="right_shoulder" x="160" y="104" width="48" height="22" rx="10"></rect>
+              <rect class="region" data-region="upper_back" x="122" y="104" width="36" height="52" rx="12"></rect>
+              <rect class="region" data-region="lower_back" x="108" y="178" width="64" height="26" rx="10"></rect>
               <rect class="region" data-region="elbow" x="54" y="154" width="34" height="34" rx="10"></rect>
               <rect class="region" data-region="elbow" x="192" y="154" width="34" height="34" rx="10"></rect>
               <rect class="region" data-region="wrist_hand" x="48" y="190" width="40" height="44" rx="12"></rect>
@@ -209,7 +212,8 @@
           <div>
             <div class="region-list">
               <button type="button" class="region-btn" data-region-btn="neck">คอ</button>
-              <button type="button" class="region-btn" data-region-btn="shoulder">ไหล่</button>
+              <button type="button" class="region-btn" data-region-btn="left_shoulder">ไหล่ซ้าย</button>
+              <button type="button" class="region-btn" data-region-btn="right_shoulder">ไหล่ขวา</button>
               <button type="button" class="region-btn" data-region-btn="upper_back">หลังส่วนบน</button>
               <button type="button" class="region-btn" data-region-btn="lower_back">หลังส่วนล่าง</button>
               <button type="button" class="region-btn" data-region-btn="elbow">ข้อศอก</button>
@@ -218,7 +222,7 @@
               <button type="button" class="region-btn" data-region-btn="knee">เข่า</button>
               <button type="button" class="region-btn" data-region-btn="ankle_foot">ข้อเท้า/เท้า</button>
             </div>
-            <p class="help" style="margin-top:var(--space-4)">ระบบจะบันทึกค่าที่เลือกเป็นรายการคำตอบ เช่น <code>neck</code>, <code>shoulder</code>, <code>upper_back</code> เพื่อให้นำเข้า Google Sheets และวิเคราะห์ต่อได้ง่าย.</p>
+            <p class="help" style="margin-top:var(--space-4)">ระบบจะบันทึกค่าที่เลือกเป็นรายการคำตอบ เช่น <code>left_shoulder</code>, <code>right_shoulder</code>, <code>upper_back</code> เพื่อให้นำเข้า Google Sheets และวิเคราะห์ต่อได้ง่าย.</p>
           </div>
         </div>
 
@@ -230,21 +234,6 @@
         <input type="hidden" id="pain_locations" name="pain_locations" value="">
       </section>
 
-      <section class="card" style="grid-column:1 / -1">
-        <h2 class="section-title">ตั้งค่าการส่งข้อมูล</h2>
-        <p class="section-desc">เมื่อนำไฟล์นี้ขึ้น GitHub Pages แล้ว สามารถระบุ Apps Script Web App URL เพื่อส่งข้อมูลไปเก็บใน Google Sheets ได้ทันที โดยใช้ `fetch()` แบบ POST ไปยัง endpoint ของ Apps Script [web:64][web:69][web:77].</p>
-        <div class="field-group">
-          <div>
-            <label for="script_url">Google Apps Script Web App URL</label>
-            <input id="script_url" name="script_url" type="url" placeholder="เช่น https://script.google.com/macros/s/AKfycb.../exec">
-            <div class="mini" style="margin-top:var(--space-2)">หากยังไม่ใส่ URL ระบบจะอยู่ในโหมด preview และแสดง payload ใน console เพื่อใช้ทดสอบหน้าเว็บก่อน [web:64][web:69]</div>
-          </div>
-        </div>
-        <div class="submit-row">
-          <button type="submit" class="primary">ส่งข้อมูล</button>
-          <div id="status" class="status">ยังไม่ได้ส่งข้อมูล</div>
-        </div>
-      </section>
     </form>
   </div>
 
@@ -286,8 +275,7 @@
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAvWocChj1Sh5Zar8L_UBlnJJ6JlessHQfvycAXXX-dsP9YVVw5rZ_GAz8iixmWnXBww/exec';
-        const scriptUrl = DEFAULT_SCRIPT_URL;
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxAvWocChj1Sh5Zar8L_UBlnJJ6JlessHQfvycAXXX-dsP9YVVw5rZ_GAz8iixmWnXBww/exec';
         const fd = new FormData(form);
         fd.set('job_tasks', fd.getAll('job_tasks').join('|'));
         fd.set('submitted_at', new Date().toISOString());
@@ -295,12 +283,6 @@
 
         const payload = Object.fromEntries(fd.entries());
 
-        if (!scriptUrl) {
-          status.textContent = 'ยังไม่ได้ใส่ Apps Script URL — ตอนนี้เป็นโหมด preview';
-          status.className = 'status';
-          console.log('Preview payload:', payload);
-          return;
-        }
 
         try {
           status.textContent = 'กำลังส่งข้อมูล...';
