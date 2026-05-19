@@ -290,7 +290,7 @@
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxAvWocChj1Sh5Zar8L_UBlnJJ6JlessHQfvycAXXX-dsP9YVVw5rZ_GAz8iixmWnXBww/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzA00qzlfUal3CZF4z2QwVpIUFeQUWEOfOd4kvnS5Jy4eiE9SR94tU3JvFKXgf5YNnVww/exec';
         const fd = new FormData(form);
         fd.set('job_tasks', fd.getAll('job_tasks').join('|'));
         fd.set('submitted_at', new Date().toISOString());
