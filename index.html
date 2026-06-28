@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root, [data-theme="light"] {
       --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
@@ -27,6 +28,7 @@
       --font-display: 'Instrument Sans', 'Noto Sans Thai', sans-serif;
       --content-default: 1140px;
     }
+
     [data-theme="dark"] {
       --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d;
       --color-border: #393836; --color-divider: #262523; --color-text: #e4e1db;
@@ -34,6 +36,7 @@
       --color-primary-highlight: #23383a; --color-success: #7fba57; --color-error: #d163a7;
       --shadow-sm: 0 1px 2px rgba(0,0,0,.25); --shadow-md: 0 10px 32px rgba(0,0,0,.35);
     }
+
     *,*::before,*::after{box-sizing:border-box}
     body{margin:0;min-height:100vh;font-family:var(--font-body);font-size:var(--text-base);line-height:1.6;color:var(--color-text);background:var(--color-bg)}
     h1,h2,h3,p{margin:0} button,input,select,textarea{font:inherit}
@@ -49,6 +52,7 @@
     .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:var(--space-6)}
     .card{padding:var(--space-6)}
     .section-title{font-size:var(--text-lg);margin-bottom:var(--space-5)}
+    .subsection-title{font-weight:700;margin:var(--space-6) 0 var(--space-3);padding-top:var(--space-5);border-top:1px solid var(--color-divider)}
     .field-group{display:grid;gap:var(--space-4)}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
     label,.legend{font-weight:600;font-size:var(--text-sm);display:block;margin-bottom:var(--space-2)}
@@ -59,6 +63,8 @@
     .chip input{position:absolute;opacity:0;pointer-events:none}
     .chip span{display:inline-flex;align-items:center;min-height:44px;padding:.6rem .95rem;border-radius:999px;border:1px solid var(--color-border);background:var(--color-surface-2);cursor:pointer}
     .chip input:checked + span{background:var(--color-primary-highlight);border-color:var(--color-primary);color:var(--color-primary);font-weight:600}
+    .conditional-field{display:none;margin-top:var(--space-3)}
+    .conditional-field.show{display:block}
     .map-wrap{display:grid;grid-template-columns:1.06fr .94fr;gap:var(--space-5);align-items:start}
     .bodymap{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-4)}
     svg{width:100%;height:auto}
@@ -75,14 +81,17 @@
     .primary:disabled{opacity:0.7; cursor:not-allowed;}
     .mini{font-size:var(--text-xs);color:var(--color-text-muted)}
     
-    /* หน้าจอ Success */
     .success-icon {
       width: 80px; height: 80px; border-radius: 50%; background: var(--color-success); color: white; display: grid; place-items: center; font-size: 40px; margin: 0 auto var(--space-5);
     }
     
-    @media (max-width: 960px){.grid,.map-wrap,.field-row,.region-list{grid-template-columns:1fr}.hero,.card{padding:var(--space-5)}}
+    @media (max-width: 960px){
+      .grid,.map-wrap,.field-row,.region-list{grid-template-columns:1fr}
+      .hero,.card{padding:var(--space-5)}
+    }
   </style>
 </head>
+
 <body>
   <div class="shell">
     <div class="topbar">
@@ -96,7 +105,6 @@
       <button class="theme-toggle" data-theme-toggle aria-label="Switch theme">◐</button>
     </div>
 
-    <!-- ส่วนของฟอร์ม (จะถูกซ่อนเมื่อส่งข้อมูลสำเร็จ) -->
     <div id="formContainer">
       <section class="hero">
         <h1>แบบสำรวจอาการปวดและลักษณะงาน</h1>
@@ -105,7 +113,55 @@
 
       <form id="surveyForm" class="grid">
         <section class="card">
-          <h2 class="section-title">ข้อมูลพื้นฐาน</h2>
+          <h2 class="section-title">ข้อมูลส่วนบุคคลและข้อมูลพื้นฐาน</h2>
+
+          <div class="field-group">
+            <div>
+              <label for="age">อายุ</label>
+              <input type="number" id="age" name="age" min="15" max="100" placeholder="ระบุอายุเป็นปี" required>
+            </div>
+
+            <div>
+              <div class="legend">โรคประจำตัว</div>
+              <div class="chips">
+                <label class="chip">
+                  <input type="radio" name="chronic_disease_status" value="ไม่มี" required>
+                  <span>ไม่มี</span>
+                </label>
+                <label class="chip">
+                  <input type="radio" name="chronic_disease_status" value="มี" required>
+                  <span>มี</span>
+                </label>
+              </div>
+
+              <div id="chronicDiseaseDetailWrap" class="conditional-field">
+                <label for="chronic_disease_detail">โปรดระบุโรคประจำตัว</label>
+                <input type="text" id="chronic_disease_detail" name="chronic_disease_detail" placeholder="เช่น เบาหวาน, ความดันโลหิตสูง, ไขมันในเลือดสูง">
+              </div>
+            </div>
+
+            <div>
+              <div class="legend">การสูบบุหรี่</div>
+              <div class="chips">
+                <label class="chip">
+                  <input type="radio" name="smoking_status" value="ไม่สูบ" required>
+                  <span>ไม่สูบ</span>
+                </label>
+                <label class="chip">
+                  <input type="radio" name="smoking_status" value="สูบ" required>
+                  <span>สูบ</span>
+                </label>
+              </div>
+
+              <div id="smokingAmountWrap" class="conditional-field">
+                <label for="smoking_amount">โปรดระบุปริมาณการสูบ</label>
+                <input type="text" id="smoking_amount" name="smoking_amount" placeholder="เช่น 5 มวน/วัน, 1 ซอง/วัน, สูบมา 10 ปี">
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection-title">ข้อมูลการทำงาน</div>
+
           <div class="field-group">
             <div class="field-row">
               <div>
@@ -133,6 +189,7 @@
                 </select>
               </div>
             </div>
+
             <div class="field-row">
               <div>
                 <label for="hours_per_day">ชั่วโมงทำงานต่อวัน</label>
@@ -233,14 +290,12 @@
       </form>
     </div>
 
-    <!-- หน้าจอความสำเร็จ (จะแสดงเมื่อส่งข้อมูลเสร็จ) -->
     <div id="successScreen" class="card" style="display: none; text-align: center; padding: 5rem 2rem; max-width: 600px; margin: 0 auto;">
       <div class="success-icon">✓</div>
       <h2 style="font-size: var(--text-xl); margin-bottom: 0.5rem;">คุณส่งข้อมูลเสร็จแล้ว</h2>
       <p style="color: var(--color-text-muted); margin-bottom: 2rem;">ขอขอบคุณที่สละเวลาให้ข้อมูล เพื่อนำไปวิเคราะห์และปรับปรุงสภาพแวดล้อมการทำงาน</p>
       <button onclick="resetView()" class="primary" style="background: var(--color-surface-2); color: var(--color-text); border: 1px solid var(--color-border);">กลับไปหน้าฟอร์ม</button>
     </div>
-
   </div>
 
   <script>
@@ -248,12 +303,13 @@
     const successScreen = document.getElementById('successScreen');
     const form = document.getElementById('surveyForm');
     const submitBtn = document.getElementById('submitBtn');
-    
+
     // ตั้งค่า Theme
     const root = document.documentElement;
     const toggle = document.querySelector('[data-theme-toggle]');
     let current = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     root.setAttribute('data-theme', current);
+
     toggle.addEventListener('click', () => {
       current = current === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', current);
@@ -276,18 +332,58 @@
     }
 
     function toggleRegion(name) {
-      if (selected.has(name)) selected.delete(name); else selected.add(name);
+      if (selected.has(name)) {
+        selected.delete(name);
+      } else {
+        selected.add(name);
+      }
       syncRegions();
     }
 
     regionEls.forEach(el => el.addEventListener('click', () => toggleRegion(el.dataset.region)));
     regionBtns.forEach(btn => btn.addEventListener('click', () => toggleRegion(btn.dataset.regionBtn)));
 
+    // แสดง/ซ่อนช่องระบุโรคประจำตัว และปริมาณการสูบบุหรี่
+    const chronicDiseaseRadios = document.querySelectorAll('input[name="chronic_disease_status"]');
+    const chronicDiseaseDetailWrap = document.getElementById('chronicDiseaseDetailWrap');
+    const chronicDiseaseDetail = document.getElementById('chronic_disease_detail');
+
+    const smokingRadios = document.querySelectorAll('input[name="smoking_status"]');
+    const smokingAmountWrap = document.getElementById('smokingAmountWrap');
+    const smokingAmount = document.getElementById('smoking_amount');
+
+    function toggleConditionalFields() {
+      const chronicDiseaseStatus = form.querySelector('input[name="chronic_disease_status"]:checked')?.value || '';
+      const smokingStatus = form.querySelector('input[name="smoking_status"]:checked')?.value || '';
+
+      if (chronicDiseaseStatus === 'มี') {
+        chronicDiseaseDetailWrap.classList.add('show');
+        chronicDiseaseDetail.required = true;
+      } else {
+        chronicDiseaseDetailWrap.classList.remove('show');
+        chronicDiseaseDetail.required = false;
+        chronicDiseaseDetail.value = '';
+      }
+
+      if (smokingStatus === 'สูบ') {
+        smokingAmountWrap.classList.add('show');
+        smokingAmount.required = true;
+      } else {
+        smokingAmountWrap.classList.remove('show');
+        smokingAmount.required = false;
+        smokingAmount.value = '';
+      }
+    }
+
+    chronicDiseaseRadios.forEach(radio => radio.addEventListener('change', toggleConditionalFields));
+    smokingRadios.forEach(radio => radio.addEventListener('change', toggleConditionalFields));
+
     // ฟังก์ชันเคลียร์ฟอร์มและสลับหน้าจอ
     window.resetView = function() {
       form.reset();
       selected.clear();
       syncRegions();
+      toggleConditionalFields();
       successScreen.style.display = 'none';
       formContainer.style.display = 'block';
       window.scrollTo(0, 0);
@@ -296,29 +392,39 @@
     // ฟังก์ชันส่งข้อมูล
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       // === ใส่ URL ของ Google Apps Script ของคุณตรงนี้ ===
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbzA00qzlfUal3CZF4z2QwVpIUFeQUWEOfOd4kvnS5Jy4eiE9SR94tU3JvFKXgf5YNnVww/exec';
-      
+
       const fd = new FormData(form);
+
       fd.set('job_tasks', fd.getAll('job_tasks').join('|'));
       fd.set('submitted_at', new Date().toISOString());
+
+      // ถ้าตอบว่าไม่มีโรคประจำตัว ให้เคลียร์ช่องระบุโรค
+      if (fd.get('chronic_disease_status') !== 'มี') {
+        fd.set('chronic_disease_detail', '');
+      }
+
+      // ถ้าตอบว่าไม่สูบ ให้เคลียร์ช่องปริมาณการสูบ
+      if (fd.get('smoking_status') !== 'สูบ') {
+        fd.set('smoking_amount', '');
+      }
 
       const payload = Object.fromEntries(fd.entries());
 
       try {
         submitBtn.textContent = 'กำลังส่งข้อมูล...';
         submitBtn.disabled = true;
-        
+
         const res = await fetch(scriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        
+
         if (!res.ok) throw new Error('Submit failed');
-        
-        // เมื่อส่งสำเร็จ ซ่อนฟอร์ม โชว์หน้า Success
+
         formContainer.style.display = 'none';
         successScreen.style.display = 'block';
         window.scrollTo(0, 0);
@@ -331,6 +437,8 @@
         submitBtn.disabled = false;
       }
     });
+
+    toggleConditionalFields();
   </script>
 </body>
 </html>
